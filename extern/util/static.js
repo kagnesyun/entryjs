@@ -2,94 +2,11 @@
 
 /* eslint-disable */
 var EntryStatic = {
-    fontFamily: 'NanumGothic',
-    exportBlockFontFamily:
-        "NanumGothic, 'NanumGothic', '나눔고딕','NanumGothicWeb', '맑은 고딕', 'Malgun Gothic', Dotum",
+    fontFamily: "NanumGothic, 'Nanum Gothic'",
     fontOffsetY: -2.5,
     heightLetter: 'M',
-    objectTypes: ['sprite', 'textBox'],
+    messageMaxLength: 10,
 };
-
-EntryStatic.usageList = [
-    'usage_sequence',
-    'usage_repeat',
-    'usage_condition_repeat',
-    'usage_condition',
-    'usage_parallel',
-    'usage_event',
-    'usage_signal',
-    'usage_random',
-    'usage_variable',
-    'usage_ask_answer',
-    'usage_comp_operation',
-    'usage_math_operation',
-    'usage_logical_operation',
-    'usage_list',
-    'usage_function',
-    'usage_arrow_move',
-    'usage_coordinate',
-    'usage_rotation',
-    'usage_speak',
-    'usage_picture_effect',
-    'usage_shape',
-    'usage_sound',
-    'usage_draw',
-    'usage_confirm',
-    'usage_timer',
-    'usage_textBox',
-    'usage_scene',
-    'usage_clone',
-    'usage_hw',
-    'usage_expansion',
-];
-
-EntryStatic.conceptList = [
-    'concept_resource_analytics',
-    'concept_individual',
-    'concept_abstractive',
-    'concept_procedual',
-    'concept_automation',
-    'concept_simulation',
-    'concept_parallel',
-];
-
-EntryStatic.subjectList = [
-    'subject_korean',
-    'subject_mathmatics',
-    'subject_social',
-    'subject_science',
-    'subject_english',
-    'subject_courtesy',
-    'subject_music',
-    'subject_paint',
-    'subject_athletic',
-    'subject_progmatic',
-];
-
-EntryStatic.lectureLevels = [1, 2, 3];
-
-// EntryStatic.lectureLevels = ['level_high', 'level_mid','level_row'];
-
-EntryStatic.lectureGrades = [
-    'e_1',
-    'e_2',
-    'e_3',
-    'e_4',
-    'e_5',
-    'e_6',
-    'm_1',
-    'm_2',
-    'm_3',
-    'general',
-];
-
-EntryStatic.categoryList = [
-    'category_game',
-    'category_animation',
-    'category_media_art',
-    'category_physical',
-    'category_etc',
-];
 
 EntryStatic.variableBlockList = [
     'get_variable',
@@ -110,79 +27,12 @@ EntryStatic.variableBlockList = [
 
 EntryStatic.messageBlockList = ['when_message_cast', 'message_cast', 'message_cast_wait'];
 
-EntryStatic.requiredTimes = [1, 2, 3, 4, 5];
-
-EntryStatic.searchProjectOption = [
-    {
-        key: 'search_updated',
-        lang: 'search_updated',
-        value: 'updated',
-    },
-    {
-        key: 'search_recent',
-        lang: 'search_recent',
-        value: 'recent',
-    },
-    {
-        key: 'search_complexity',
-        lang: 'search_complexity',
-        value: 'complexity',
-    },
-    {
-        key: 'search_staffPicked',
-        lang: 'search_staffPicked',
-        value: 'staffPicked',
-    },
-    {
-        key: 'search_childCnt',
-        lang: 'search_childCnt',
-        value: 'childCnt',
-    },
-    {
-        key: 'search_likeCnt',
-        lang: 'search_likeCnt',
-        value: 'recentLikeCnt',
-    },
-];
-
-EntryStatic.categoryProjectOption = [
-    {
-        key: 'search_genre_all',
-        lang: 'search_전체',
-        value: '전체',
-    },
-    {
-        key: 'search_genre_game',
-        lang: 'search_게임',
-        value: '게임',
-    },
-    {
-        key: 'search_genre_animation',
-        lang: 'search_애니메이션',
-        value: '애니메이션',
-    },
-    {
-        key: 'search_genre_media',
-        lang: 'search_미디어아트',
-        value: '미디어아트',
-    },
-    {
-        key: 'search_genre_physical',
-        lang: 'search_피지컬',
-        value: '피지컬',
-    },
-    {
-        key: 'search_genre_etc',
-        lang: 'search_기타',
-        value: '기타',
-    },
-];
-
-EntryStatic.getAllBlocks = function() {
+EntryStatic.getAllBlocks = function () {
     return [
         {
             category: 'start',
             blocks: [
+                'messageAddButton',
                 'when_run_button_click',
                 'when_some_key_pressed',
                 'mouse_clicked',
@@ -218,6 +68,7 @@ EntryStatic.getAllBlocks = function() {
                 'repeat_inf',
                 'repeat_while_true',
                 'stop_repeat',
+                'continue_repeat',
                 '_if',
                 'if_else',
                 'wait_until_true',
@@ -268,6 +119,8 @@ EntryStatic.getAllBlocks = function() {
                 'erase_all_effects',
                 'change_scale_size',
                 'set_scale_size',
+                'stretch_scale_size',
+                'reset_scale_size',
                 'flip_x',
                 'flip_y',
                 'change_object_index',
@@ -280,9 +133,12 @@ EntryStatic.getAllBlocks = function() {
                 'start_drawing',
                 'stop_drawing',
                 'set_color',
-                'set_random_color',
                 'change_thickness',
                 'set_thickness',
+                'start_fill',
+                'stop_fill',
+                'set_fill_color',
+                'set_random_color',
                 'change_brush_transparency',
                 'set_brush_tranparency',
                 'brush_erase_all',
@@ -311,20 +167,32 @@ EntryStatic.getAllBlocks = function() {
                 'sound_something_wait_with_block',
                 'sound_something_second_wait_with_block',
                 'sound_from_to_and_wait',
+                'get_sound_duration',
+                'get_sound_volume',
                 'sound_volume_change',
                 'sound_volume_set',
+                'get_sound_speed',
+                'sound_speed_change',
+                'sound_speed_set',
                 'sound_silent_all',
+                'play_bgm',
+                'stop_bgm',
             ],
         },
         {
             category: 'judgement',
             blocks: [
                 'is_clicked',
+                'is_object_clicked',
                 'is_press_some_key',
                 'reach_something',
+                'is_type',
                 'boolean_basic_operator',
                 'boolean_and_or',
                 'boolean_not',
+                'is_boost_mode',
+                'is_current_device_type',
+                'is_touch_supported',
             ],
         },
         {
@@ -334,7 +202,6 @@ EntryStatic.getAllBlocks = function() {
                 'calc_rand',
                 'coordinate_mouse',
                 'coordinate_object',
-                'get_sound_volume',
                 'quotient_and_mod',
                 'calc_operation',
                 'get_project_timer_value',
@@ -342,15 +209,21 @@ EntryStatic.getAllBlocks = function() {
                 'set_visible_project_timer',
                 'get_date',
                 'distance_something',
-                'get_sound_duration',
                 'get_user_name',
+                'get_nickname',
                 'length_of_string',
+                'count_match_string',
                 'combine_something',
                 'char_at',
                 'substring',
                 'index_of_string',
                 'replace_string',
+                'reverse_of_string',
                 'change_string_case',
+                'get_block_count',
+                'change_rgb_to_hex',
+                'change_hex_to_rgb',
+                'get_boolean_value',
             ],
         },
         {
@@ -379,7 +252,13 @@ EntryStatic.getAllBlocks = function() {
         },
         {
             category: 'func',
-            blocks: ['functionAddButton'],
+            blocks: [
+                'functionAddButton',
+                'function_name',
+                'showFunctionPropsButton',
+                'set_func_variable',
+                'get_func_variable',
+            ],
         },
         {
             category: 'analysis',
@@ -389,12 +268,19 @@ EntryStatic.getAllBlocks = function() {
                 'insert_row_to_table',
                 'delete_row_from_table',
                 'set_value_from_table',
+                'save_current_table',
                 'get_table_count',
                 'get_value_from_table',
                 'get_value_from_last_row',
                 'calc_values_from_table',
+                'open_table',
+                'open_table_wait',
                 'open_table_chart',
                 'close_table_chart',
+                'get_coefficient',
+                'set_value_from_cell',
+                'get_value_from_cell',
+                'get_value_v_lookup',
             ],
         },
         {
@@ -408,6 +294,9 @@ EntryStatic.getAllBlocks = function() {
                 'learning_title_number',
                 'learning_title_regression',
                 'learning_title_cluster',
+                'learning_title_logistic_regression',
+                'learning_title_decisiontree',
+                'learning_title_svm',
                 'retrain_model',
                 'model_is_trained',
                 'set_train_visible',
@@ -416,7 +305,36 @@ EntryStatic.getAllBlocks = function() {
                 'get_regression_predict_1',
                 'get_regression_predict_2',
                 'get_regression_predict_3',
+                'get_regression_predict_4',
+                'get_regression_predict_5',
+                'get_regression_predict_6',
                 'get_regression_accuracy',
+                'set_logistic_regression_option',
+                'set_logistic_regression_optimizer',
+                'get_logistic_regression_probability_1',
+                'get_logistic_regression_probability_2',
+                'get_logistic_regression_probability_3',
+                'get_logistic_regression_probability_4',
+                'get_logistic_regression_probability_5',
+                'get_logistic_regression_probability_6',
+                'set_decisiontree_option',
+                'set_decisiontree_tree',
+                'set_svm_option',
+                'set_kernel_linear',
+                'set_kernel_option',
+                'is_result_1',
+                'is_result_2',
+                'is_result_3',
+                'is_result_4',
+                'is_result_5',
+                'is_result_6',
+                'get_predict_1',
+                'get_predict_2',
+                'get_predict_3',
+                'get_predict_4',
+                'get_predict_5',
+                'get_predict_6',
+                'get_result_info',
                 'set_cluster_option_k',
                 'set_cluster_option_centroids',
                 'get_cluster_centriod_count',
@@ -424,26 +342,42 @@ EntryStatic.getAllBlocks = function() {
                 'get_cluster_centriod_index_1',
                 'get_cluster_centriod_index_2',
                 'get_cluster_centriod_index_3',
+                'get_cluster_centriod_index_4',
+                'get_cluster_centriod_index_5',
+                'get_cluster_centriod_index_6',
                 'set_number_learning_option_k',
                 'get_number_learning_predict_1',
                 'get_number_learning_predict_2',
                 'get_number_learning_predict_3',
+                'get_number_learning_predict_4',
+                'get_number_learning_predict_5',
+                'get_number_learning_predict_6',
                 'get_number_learning_predict_param_1',
                 'get_number_learning_predict_param_2',
                 'get_number_learning_predict_param_3',
+                'get_number_learning_predict_param_4',
+                'get_number_learning_predict_param_5',
+                'get_number_learning_predict_param_6',
                 'is_number_learning_group_1',
                 'is_number_learning_group_2',
                 'is_number_learning_group_3',
+                'is_number_learning_group_4',
+                'is_number_learning_group_5',
+                'is_number_learning_group_6',
                 'insert_data_for_test',
+                'video_capture_for_image_test',
                 'insert_text_block_for_test',
                 'test_result',
                 'accuracy_of_result',
                 'is_group',
                 'audio_title',
                 'check_microphone',
-                'speech_to_text_convert',
-                'speech_to_text_get_value',
                 'get_microphone_volume',
+                'speech_to_text_title',
+                'speech_to_text_convert',
+                'timed_speech_to_text_convert',
+                'set_visible_speech_to_text',
+                'speech_to_text_get_value',
                 'tts_title',
                 'read_text',
                 'read_text_wait_with_block',
@@ -466,6 +400,55 @@ EntryStatic.getAllBlocks = function() {
                 'video_body_part_coord',
                 'video_face_part_coord',
                 'video_detected_face_info',
+                'media_pipe_title',
+                'media_pipe_video_screen',
+                'media_pipe_switch_camera',
+                'check_connected_camera',
+                'media_pipe_flip_camera',
+                'media_pipe_set_opacity_camera',
+                'media_pipe_motion_value',
+                'hand_detection_title',
+                'when_hand_detection',
+                'hand_detection',
+                'draw_detected_hand',
+                'check_detected_hand',
+                'count_detected_hand',
+                'locate_to_hand',
+                'locate_time_to_hand',
+                'axis_detected_hand',
+                'is_which_hand',
+                'get_which_hand',
+                'is_which_gesture',
+                'get_which_gesture',
+                'pose_landmarker_title',
+                'when_pose_landmarker',
+                'pose_landmarker',
+                'draw_detected_pose',
+                'check_detected_pose',
+                'count_detected_pose',
+                'locate_to_pose',
+                'locate_time_to_pose',
+                'axis_detected_pose',
+                'face_landmarker_title',
+                'when_face_landmarker',
+                'face_landmarker',
+                'draw_detected_face',
+                'check_detected_face',
+                'count_detected_face',
+                'locate_to_face',
+                'locate_time_to_face',
+                'check_detected_gender',
+                'check_compare_age',
+                'check_detected_emotion',
+                'axis_detected_face',
+                'get_detected_face_value',
+                'object_detector_title',
+                'when_object_detector',
+                'object_detector',
+                'draw_detected_object',
+                'check_detected_object',
+                'count_detected_object',
+                'is_detected_among_objects',
             ],
         },
         {
@@ -473,6 +456,17 @@ EntryStatic.getAllBlocks = function() {
             blocks: [
                 'expansionBlockAddButton',
                 'weather_title',
+                'get_cur_weather',
+                'get_cur_wind',
+                'get_cur_weather_data',
+                'check_cur_weather',
+                'check_cur_finddust',
+                'get_day_weather',
+                'get_day_weather_data',
+                'check_day_weather',
+                'get_time_weather',
+                'get_time_weather_data',
+                'check_time_weather',
                 'check_weather',
                 'check_finedust',
                 'get_weather_data',
@@ -486,221 +480,48 @@ EntryStatic.getAllBlocks = function() {
                 'festival_title',
                 'count_festival',
                 'get_festival_info',
-                'behaviorConductDisaster_title',
-                'count_disaster_behavior',
-                'get_disaster_behavior',
-                'behaviorConductLifeSafety_title',
-                'count_lifeSafety_behavior',
-                'get_lifeSafety_behavior',
+                'emergencyActionGuidelines_title',
+                'count_disaster_guideline',
+                'get_disaster_guideline',
+                'count_social_disaster_guideline',
+                'get_social_disaster_guideline',
+                'count_safety_accident_guideline',
+                'get_safety_accident_guideline',
+                'disaster_alert_title',
+                'count_disaster_alert',
+                'get_disaster_alert',
+                'check_disaster_alert',
             ],
         },
         {
             category: 'arduino',
             blocks: [
+                'hardware_connect_helper',
+                'hardware_noti_installed',
                 'arduino_reconnect',
                 'arduino_open',
+                'hardware_program_download',
                 'arduino_cloud_pc_open',
-                'arduino_connect',
-                'arduino_download_connector',
-                // 'download_guide',
-                'arduino_download_source',
+                'arduino_lite_disconnect',
+                'hardware_device_name_title',
+                'hardware_device_name_content',
+                'hardware_connected_noti',
+                'arduino_lite_connected_noti',
+                'arduino_lite_reconnect',
+                'hardware_noti_not_installed',
+                'arduino_lite_download_firmware',
+                'arduino_lite_connect',
+                'arduino_lite_guide',
                 'arduino_noti',
+                'arduino_lite_alert',
             ].concat(EntryStatic.DynamicHardwareBlocks),
         },
     ];
 };
-EntryStatic.DynamicHardwareBlocks = [];
-EntryStatic.discussCategories = [
-    // 'notice',
-    'qna',
-    'tips',
-    'free',
-    'report',
-    'notice',
-];
-
-EntryStatic.artCategories = [
-    {
-        key: 'art_category_',
-        lang: 'art_category_all',
-        value: '',
-    },
-    {
-        key: 'art_category_게임',
-        lang: 'art_category_game',
-        value: '게임',
-    },
-    {
-        key: 'art_category_애니메이션',
-        lang: 'art_category_animation',
-        value: '애니메이션',
-    },
-    {
-        key: 'art_category_미디어아트',
-        lang: 'art_category_media',
-        value: '미디어아트',
-    },
-    {
-        key: 'art_category_피지컬',
-        lang: 'art_category_physical',
-        value: '피지컬',
-    },
-    {
-        key: 'art_category_기타',
-        lang: 'art_category_etc',
-        value: '기타',
-    },
-];
-
-EntryStatic.artSortOptions = [
-    {
-        key: 'art_sort_updated',
-        lang: 'art_sort_updated',
-        value: 'updated',
-    },
-    {
-        key: 'art_sort_visit',
-        lang: 'art_sort_visit',
-        value: 'visit',
-    },
-    {
-        key: 'art_sort_likeCnt',
-        lang: 'art_sort_likeCnt',
-        value: 'likeCnt',
-    },
-    {
-        key: 'art_sort_comment',
-        lang: 'art_sort_comment',
-        value: 'comment',
-    },
-];
-
-EntryStatic.discussSortOptions = [
-    {
-        lang: 'discuss_sort_created',
-        value: 'created',
-    },
-    {
-        lang: 'discuss_sort_visit',
-        value: 'visit',
-    },
-    {
-        lang: 'discuss_sort_likesLength',
-        value: 'likesLength',
-    },
-    {
-        lang: 'discuss_sort_commentsLength',
-        value: 'commentsLength',
-    },
-];
-EntryStatic.discussPeriodOptions = [
-    {
-        key: 'discuss_period_',
-        lang: 'discuss_period_all',
-        value: '',
-    },
-    {
-        key: 'discuss_period_1',
-        lang: 'discuss_period_day',
-        value: '1',
-    },
-    {
-        key: 'discuss_period_7',
-        lang: 'discuss_period_week',
-        value: '7',
-    },
-    {
-        key: 'discuss_period_30',
-        lang: 'discuss_period_month',
-        value: '30',
-    },
-    {
-        key: 'discuss_period_90',
-        lang: 'discuss_period_three_month',
-        value: '90',
-    },
-];
-
-EntryStatic.artPeriodOptions = [
-    {
-        key: 'art_period_',
-        lang: 'art_period_all',
-        value: '',
-    },
-    {
-        key: 'art_period_1',
-        lang: 'art_period_day',
-        value: '1',
-    },
-    {
-        key: 'art_period_7',
-        lang: 'art_period_week',
-        value: '7',
-    },
-    {
-        key: 'art_period_30',
-        lang: 'art_period_month',
-        value: '30',
-    },
-    {
-        key: 'art_period_90',
-        lang: 'art_period_three_month',
-        value: '90',
-    },
-];
-
-EntryStatic.getCategoryByBlock = function(blockName) {
-    if (!blockName) {
-        return false;
-    }
-    const allBlocks = EntryStatic.getAllBlocks();
-    for (let i = 0, len = allBlocks.length; i < len; i++) {
-        const blocks = allBlocks[i].blocks;
-        if (blocks.indexOf(blockName) > -1) {
-            return allBlocks[i].category;
-        }
-    }
-    return false;
-};
-
-EntryStatic.objectMainCategories = [
-    'entrybot_friends',
-    'people',
-    'animal',
-    'plant',
-    'vehicles',
-    'architect',
-    'food',
-    'environment',
-    'stuff',
-    'fantasy',
-    'interface',
-    'background',
-];
-
-EntryStatic.objectSubCategories = {
-    entrybot_friends: [],
-    people: [],
-    animal: ['animal_flying', 'animal_land', 'animal_water', 'animal_others'],
-    plant: ['plant_flower', 'plant_grass', 'plant_tree', 'plant_others'],
-    vehicles: ['vehicles_flying', 'vehicles_land', 'vehicles_water', 'vehicles_others'],
-    architect: ['architect_building', 'architect_monument', 'architect_others'],
-    food: ['food_vegetables', 'food_meat', 'food_drink', 'food_others'],
-    environment: ['environment_nature', 'environment_space', 'environment_others'],
-    stuff: ['stuff_living', 'stuff_hobby', 'stuff_others'],
-    fantasy: [],
-    interface: ['interface_website', 'interface_game', 'interface_others'],
-    background: [
-        'background_outdoor',
-        'background_indoor',
-        'background_nature',
-        'background_others',
-    ],
-};
 
 /* eslint-disable */
 Object.defineProperty(EntryStatic, 'fonts', {
-    get: function() {
+    get: function () {
         return [
             {
                 name: Lang.Fonts.batang,
@@ -727,6 +548,12 @@ Object.defineProperty(EntryStatic, 'fonts', {
                 visible: true,
             },
             {
+                name: Lang.Fonts.nanumbarunpen,
+                family: 'Nanum Barun Pen',
+                url: '/css/nanumbarunpen.css',
+                visible: true,
+            },
+            {
                 name: Lang.Fonts.pen_script,
                 family: 'Nanum Pen Script',
                 url: '/css/nanumpenscript.css',
@@ -739,9 +566,21 @@ Object.defineProperty(EntryStatic, 'fonts', {
                 visible: true,
             },
             {
-                name: Lang.Fonts.gothic_coding,
-                family: 'Nanum Gothic Coding',
-                url: '/css/nanumgothiccoding.css',
+                name: Lang.Fonts.maruburi,
+                family: 'MaruBuri',
+                url: '/css/maruburi.css',
+                visible: true,
+            },
+            {
+                name: Lang.Fonts.notosans,
+                family: 'NotoSans',
+                url: '/css/notosans.css',
+                visible: true,
+            },
+            {
+                name: Lang.Fonts.d2coding,
+                family: 'D2 Coding',
+                url: '/css/d2coding.css',
                 visible: true,
             },
             {
@@ -952,58 +791,40 @@ EntryStatic.colorSet = {
     common: {
         WHITE: '#FFFFFF',
         DARK: '#000000',
+        GRAY: '#6c8696',
         TRANSPARENT: 'transparent',
         BUTTON: '#4f80ff',
         BUTTON_BACKGROUND: '#eee',
         TEXT: '#333',
         BUTTON_BACKGROUND_DISABLED: '#f9f9f9',
         BUTTON_DISABLED: '#cbcbcb',
+        ALERT: '#FB2729',
     },
 };
 
-EntryStatic.COMMAND_TYPES = {
-    addThread: 101,
-    destroyThread: 102,
-    destroyBlock: 103,
-    recoverBlock: 104,
-    insertBlock: 105,
-    separateBlock: 106,
-    moveBlock: 107,
-    cloneBlock: 108,
-    uncloneBlock: 109,
-    scrollBoard: 110,
-    setFieldValue: 111,
-
-    selectObject: 201,
-
-    do: 301,
-    undo: 302,
-    redo: 303,
-};
-
-EntryStatic.getQuestionCategoryData = function() {
-    return {
-        category: 'dummy',
-        blocks: [
-            'hidden_event',
-            'hidden_loop2',
-            'hidden_if_else2',
-            'hidden',
-            'hidden_string',
-            'hidden_boolean',
-        ],
-    };
-};
-
-EntryStatic.getDefaultFontFamily = function() {
+EntryStatic.getDefaultFontFamily = function () {
     const localLang = Lang || {};
     const type = localLang.type;
     const fallbackType = localLang.fallbackType;
     const langType = type || fallbackType || 'en';
     switch (langType) {
         default:
-            return "EntryNG, NanumGothic, 나눔고딕, NanumGothicWeb, '맑은 고딕', 'Malgun Gothic', Dotum";
+            return "NanumGothic, 'Nanum Gothic', 나눔고딕, NanumGothicWeb, '맑은 고딕', 'Malgun Gothic', Dotum";
     }
+};
+
+EntryStatic.getCategoryByBlock = function (blockName) {
+    if (!blockName) {
+        return false;
+    }
+    const allBlocks = EntryStatic.getAllBlocks();
+    for (let i = 0, len = allBlocks.length; i < len; i++) {
+        const blocks = allBlocks[i].blocks;
+        if (blocks.indexOf(blockName) > -1) {
+            return allBlocks[i].category;
+        }
+    }
+    return false;
 };
 
 // for server node js code

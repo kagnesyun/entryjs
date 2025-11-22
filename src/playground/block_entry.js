@@ -1,6 +1,7 @@
 'use strict';
 
 import DataTable from '../class/DataTable';
+const { getStateOptions, getCityOptions, locationData } = require('../util/location');
 
 if (typeof global.Entry !== 'object') {
     global.Entry = {};
@@ -22,7 +23,7 @@ if (!Entry.block) {
 
 function getConverters() {
     const c = {};
-    c.keyboardCode = function(key, value) {
+    c.keyboardCode = function (key, value) {
         let code;
 
         if (key) {
@@ -46,7 +47,7 @@ function getConverters() {
         }
     };
 
-    c.returnStringKey = function(key, value) {
+    c.returnStringKey = function (key, value) {
         if ((!value && typeof value !== 'number') || value === 'null') {
             return 'None';
         }
@@ -74,7 +75,7 @@ function getConverters() {
         return '"()"'.replace('()', key);
     };
 
-    c.returnRawStringKey = function(key, value) {
+    c.returnRawStringKey = function (key, value) {
         if ((!value && typeof value !== 'number') || value === 'null') {
             return 'None';
         }
@@ -90,7 +91,7 @@ function getConverters() {
         return '"()"'.replace('"()"', key);
     };
 
-    c.returnStringValue = function(key, value) {
+    c.returnStringValue = function (key, value) {
         if ((!value && typeof value !== 'number') || value === 'null') {
             return 'None';
         }
@@ -108,7 +109,7 @@ function getConverters() {
         return '"()"'.replace('()', value);
     };
 
-    c.returnOperator = function(key, value) {
+    c.returnOperator = function (key, value) {
         const map = {
             EQUAL: '==',
             GREATER: '>',
@@ -132,16 +133,18 @@ function getConverters() {
             '/': 'DIVIDE',
             AND: 'and',
             OR: 'or',
+            QUOTIENT: '//',
+            MOD: '%',
         };
         return map[value];
     };
 
-    c.returnRawNumberValueByKey = function(key, value) {
+    c.returnRawNumberValueByKey = function (key, value) {
         //return String(key).replace(/\D/, '');
         return key;
     };
 
-    c.returnStringOrNumberByValue = function(key, value) {
+    c.returnStringOrNumberByValue = function (key, value) {
         if (!Entry.Utils.isNumber(value)) {
             value = value.replace(/\"/gi, '');
             return '"()"'.replace('()', value);
@@ -150,7 +153,7 @@ function getConverters() {
         }
     };
 
-    c.returnObjectOrStringValue = function(key, value) {
+    c.returnObjectOrStringValue = function (key, value) {
         if (Entry.container && Entry.container.getObject(value)) {
             const objectName = Entry.container.getObject(value).name;
             return '"()"'.replace('()', objectName);
@@ -170,7 +173,7 @@ function getConverters() {
         }
     };
 
-    c.returnStringValueUpperCase = function(key, value) {
+    c.returnStringValueUpperCase = function (key, value) {
         if (this.codeMap) {
             var codeMap = eval(this.codeMap);
         }
@@ -184,7 +187,7 @@ function getConverters() {
         return '"()"'.replace('()', value).toUpperCase();
     };
 
-    c.returnValueUpperCase = function(key, value) {
+    c.returnValueUpperCase = function (key, value) {
         if (this.codeMap) {
             var codeMap = eval(this.codeMap);
         }
@@ -198,7 +201,7 @@ function getConverters() {
         return value.toUpperCase();
     };
 
-    c.returnStringValueLowerCase = function(key, value) {
+    c.returnStringValueLowerCase = function (key, value) {
         if (this.codeMap) {
             var codeMap = eval(this.codeMap);
         }
@@ -212,7 +215,7 @@ function getConverters() {
         return '"()"'.replace('()', value).toLowerCase();
     };
 
-    c.returnValuePartialUpperCase = function(key, value) {
+    c.returnValuePartialUpperCase = function (key, value) {
         if (this.codeMap) {
             var codeMap = eval(this.codeMap);
         }
@@ -258,7 +261,7 @@ function getBlocks() {
             },
             events: {
                 mousedown: [
-                    function() {
+                    function () {
                         Entry.aiLearning.openManager();
                     },
                 ],
@@ -281,7 +284,7 @@ function getBlocks() {
             },
             events: {
                 mousedown: [
-                    function() {
+                    function () {
                         Entry.do('playgroundClickAddAIUtilizeBlock');
                     },
                 ],
@@ -304,30 +307,272 @@ function getBlocks() {
             },
             events: {
                 mousedown: [
-                    function() {
+                    function () {
                         Entry.do('playgroundClickAddExpansionBlock');
                     },
                 ],
             },
         },
-        //region hardware 하드웨어 기본
-        arduino_noti_light: {
+        arduino_lite_connect: {
+            skeleton: 'basic_button',
+            color: EntryStatic.colorSet.common.TRANSPARENT,
+            template: '%1',
+            isNotFor: ['arduinoLiteSupported'],
+            class: 'arduino_default_not_installed',
+            params: [
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.arduino_lite_connect,
+                    color: EntryStatic.colorSet.common.BUTTON,
+                    align: 'center',
+                },
+            ],
+            events: {
+                mousedown: [
+                    function () {
+                        Entry.do('playgroundClickAddHardwareLiteBlock');
+                    },
+                ],
+            },
+        },
+        arduino_lite_guide: {
+            skeleton: 'clickable_text',
+            skeletonOptions: {
+                box: {
+                    offsetX: 3,
+                },
+            },
+            color: EntryStatic.colorSet.common.TRANSPARENT,
+            template: '%1',
+            isNotFor: ['arduinoLiteGuide'],
+            class: 'arduino_default',
+            params: [
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.arduino_lite_guide,
+                    color: EntryStatic.colorSet.common.TEXT,
+                    align: 'center',
+                },
+            ],
+            events: {
+                mousedown: [
+                    function () {
+                        window.open(
+                            'https://docs.playentry.org/user/block_hardware.html#POINT-%EC%95%84%EB%91%90%EC%9D%B4%EB%85%B8-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0'
+                        );
+                    },
+                ],
+            },
+        },
+        arduino_lite_reconnect: {
+            skeleton: 'basic_button',
+            color: EntryStatic.colorSet.common.TRANSPARENT,
+            template: '%1',
+            isNotFor: ['arduinoLiteConnectFailed'],
+            class: 'arduino_default',
+            params: [
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.arduino_lite_reconnect,
+                    color: EntryStatic.colorSet.common.BUTTON,
+                    align: 'center',
+                },
+            ],
+            events: {
+                mousedown: [
+                    function () {
+                        Entry.hwLite.connect();
+                    },
+                ],
+            },
+        },
+        arduino_lite_download_firmware: {
+            skeleton: 'basic_button',
+            color: EntryStatic.colorSet.common.TRANSPARENT,
+            template: '%1',
+            isNotFor: ['arduinoLiteConnectFailed'],
+            class: 'arduino_default',
+            params: [
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.arduino_lite_download_firmware,
+                    color: EntryStatic.colorSet.common.BUTTON,
+                    align: 'center',
+                },
+            ],
+            events: {
+                mousedown: [],
+            },
+        },
+        arduino_lite_disconnect: {
+            skeleton: 'basic_button',
+            color: EntryStatic.colorSet.common.TRANSPARENT,
+            template: '%1',
+            isNotFor: ['arduinoLiteConnectFailed', 'arduinoLiteConnected'],
+            class: 'arduino_default',
+            params: [
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.arduino_lite_disconnect,
+                    color: EntryStatic.colorSet.common.BUTTON,
+                    align: 'center',
+                },
+            ],
+            events: {
+                mousedown: [
+                    function () {
+                        Entry.hwLite.removeHardwareLiteModule();
+                    },
+                ],
+            },
+        },
+        hardware_device_name_title: {
             skeleton: 'basic_text_light',
             color: EntryStatic.colorSet.common.TRANSPARENT,
             template: '%1',
             params: [
                 {
                     type: 'Text',
-                    text: Lang.Blocks.arduino_noti_text_light,
-                    color: EntryStatic.colorSet.common.BUTTON,
+                    text: Lang.Blocks.hardware_device_name_title,
+                    color: EntryStatic.colorSet.common.TEXT,
+                    align: 'center',
+                    fontWeight: '100',
+                },
+            ],
+            class: 'hardware_device_info',
+            isNotFor: [
+                'arduinoConnect',
+                'arduinoConnected',
+                'arduinoLiteConnectFailed',
+                'arduinoLiteConnected',
+            ],
+            events: {},
+        },
+        hardware_device_name_title_robot: {
+            parent: 'hardware_device_name_title',
+            params: [
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.hardware_device_name_title_robot,
+                    color: EntryStatic.colorSet.common.TEXT,
+                    align: 'center',
+                    fontWeight: '100',
+                },
+            ],
+            isNotFor: [
+                'arduinoConnect',
+                'arduinoConnected',
+                'arduinoLiteConnectFailed',
+                'arduinoLiteConnected',
+            ],
+        },
+        hardware_device_name_title_sensor: {
+            parent: 'hardware_device_name_title_robot',
+        },
+        hardware_device_name_title_motor: {
+            parent: 'hardware_device_name_title_robot',
+        },
+        hardware_device_name_title_led: {
+            parent: 'hardware_device_name_title_robot',
+        },
+        hardware_device_name_title_melody: {
+            parent: 'hardware_device_name_title_robot',
+        },
+        hardware_device_name_content: {
+            skeleton: 'basic_text',
+            skeletonOptions: {
+                box: {
+                    offsetY: 10,
+                },
+            },
+            color: EntryStatic.colorSet.common.TRANSPARENT,
+            template: '%1',
+            params: [
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.hardware_device_name_content,
+                    color: EntryStatic.colorSet.common.TEXT,
+                    align: 'center',
+                },
+            ],
+            class: 'hardware_device_info',
+            isNotFor: [
+                'arduinoConnect',
+                'arduinoConnected',
+                'arduinoLiteConnectFailed',
+                'arduinoLiteConnected',
+            ],
+            events: {},
+        },
+        hardware_device_name_content_sensor: {
+            parent: 'hardware_device_name_content',
+        },
+        hardware_device_name_content_motor: {
+            parent: 'hardware_device_name_content',
+        },
+        hardware_device_name_content_led: {
+            parent: 'hardware_device_name_content',
+        },
+        hardware_device_name_content_melody: {
+            parent: 'hardware_device_name_content',
+        },
+        hardware_connected_noti: {
+            skeleton: 'basic_text',
+            skeletonOptions: {
+                box: {
+                    offsetY: 10,
+                },
+            },
+            color: EntryStatic.colorSet.common.TRANSPARENT,
+            template: '%1',
+            params: [
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.hardware_connected_noti,
+                    color: EntryStatic.colorSet.common.ALERT,
+                    align: 'center',
+                },
+            ],
+            class: 'hardware_device_alert',
+            isNotFor: ['arduinoConnect'],
+            events: {},
+        },
+        arduino_lite_connected_noti: {
+            skeleton: 'basic_text',
+            color: EntryStatic.colorSet.common.TRANSPARENT,
+            template: '%1',
+            params: [
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.arduino_lite_connected_noti,
+                    color: EntryStatic.colorSet.common.GRAY,
                     align: 'center',
                 },
             ],
             def: {
-                type: 'arduino_noti_light',
+                type: 'arduino_lite_connected_noti',
             },
-            class: 'arduino_default_noti',
-            isNotFor: ['arduinoDisconnected'],
+            class: 'hardware_device_info',
+            isNotFor: ['arduinoLiteConnectFailed', 'arduinoLiteConnected'],
+            events: {},
+        },
+        arduino_lite_alert: {
+            skeleton: 'basic_text',
+            color: EntryStatic.colorSet.common.TRANSPARENT,
+            template: '%1',
+            params: [
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.arduino_lite_alert,
+                    color: EntryStatic.colorSet.common.ALERT,
+                    align: 'center',
+                },
+            ],
+            def: {
+                type: 'arduino_lite_alert',
+            },
+            class: 'arduino_lite_alert',
+            isNotFor: ['arduinoLiteConnectFailed'],
             events: {},
         },
         arduino_noti: {
@@ -338,7 +583,7 @@ function getBlocks() {
                 {
                     type: 'Text',
                     text: Lang.Blocks.arduino_noti_text,
-                    color: EntryStatic.colorSet.common.BUTTON,
+                    color: EntryStatic.colorSet.common.GRAY,
                     align: 'center',
                 },
             ],
@@ -348,84 +593,6 @@ function getBlocks() {
             class: 'arduino_default_noti',
             isNotFor: ['arduinoDisconnected'],
             events: {},
-        },
-        arduino_download_connector: {
-            skeleton: 'clickable_text',
-            skeletonOptions: {
-                box: {
-                    offsetX: 3,
-                },
-            },
-            isNotFor: ['arduinoDisconnected'],
-            color: EntryStatic.colorSet.common.TRANSPARENT,
-            class: 'arduino_default',
-            params: [
-                {
-                    type: 'Text',
-                    text: Lang.Blocks.ARDUINO_download_connector,
-                    color: EntryStatic.colorSet.common.TEXT,
-                    align: 'center',
-                },
-            ],
-            events: {
-                mousedown: [
-                    function() {
-                        Entry.hw.downloadConnector();
-                    },
-                ],
-            },
-        },
-        // download_guide: {
-        //     skeleton: 'clickable_text',
-        //     skeletonOptions: {
-        //         box: {
-        //             offsetX: 3,
-        //         },
-        //     },
-        //     isNotFor: ['arduinoDisconnected'],
-        //     color: EntryStatic.colorSet.common.TRANSPARENT,
-        //     class: 'arduino_default',
-        //     params: [
-        //         {
-        //             type: 'Text',
-        //             text: Lang.Blocks.download_guide,
-        //             color: EntryStatic.colorSet.common.TEXT,
-        //             align: 'center',
-        //         },
-        //     ],
-        //     events: {
-        //         mousedown: [
-        //             function() {
-        //                 Entry.hw.downloadGuide();
-        //             },
-        //         ],
-        //     },
-        // },
-        arduino_download_source: {
-            skeleton: 'clickable_text',
-            skeletonOptions: {
-                box: {
-                    offsetX: 3,
-                },
-            },
-            isNotFor: ['arduinoDisconnected'],
-            color: EntryStatic.colorSet.common.TRANSPARENT,
-            params: [
-                {
-                    type: 'Text',
-                    text: Lang.Blocks.ARDUINO_download_source,
-                    color: EntryStatic.colorSet.common.TEXT,
-                    align: 'center',
-                },
-            ],
-            class: 'arduino_default',
-            events: {
-                mousedown: [
-                    function() {
-                        Entry.hw.downloadSource();
-                    },
-                ],
-            },
         },
         arduino_connected: {
             skeleton: 'basic_button',
@@ -441,22 +608,7 @@ function getBlocks() {
             ],
             events: {},
         },
-        arduino_connect: {
-            skeleton: 'basic_text',
-            color: EntryStatic.colorSet.common.TRANSPARENT,
-            template: '%1',
-            isNotFor: ['arduinoConnect'],
-            class: 'arduino_default',
-            params: [
-                {
-                    type: 'Text',
-                    text: Lang.Blocks.ARDUINO_connect,
-                    color: EntryStatic.colorSet.common.TEXT,
-                    align: 'center',
-                },
-            ],
-            events: {},
-        },
+
         arduino_reconnect: {
             skeleton: 'basic_button',
             color: EntryStatic.colorSet.common.BUTTON_BACKGROUND,
@@ -469,14 +621,70 @@ function getBlocks() {
                     align: 'center',
                 },
             ],
-            class: 'arduino_default',
+            class: 'arduino_default_installed',
             events: {
                 mousedown: [
-                    function() {
+                    function () {
                         Entry.hw.retryConnect();
                     },
                 ],
             },
+        },
+        robot_connect_helper: {
+            skeleton: 'clickable_text',
+            skeletonOptions: {
+                box: {
+                    offsetY: -10,
+                },
+            },
+            template: '%1%2',
+            isNotFor: ['arduinoDisconnected'],
+            color: EntryStatic.colorSet.common.TRANSPARENT,
+            class: 'arduino_guide',
+            params: [
+                {
+                    type: 'Indicator',
+                    img: 'question_in_round.svg',
+                    size: 9,
+                    position: {
+                        x: -45,
+                        y: 0,
+                    },
+                },
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.ROBOT_connect_helper,
+                    color: EntryStatic.colorSet.common.BUTTON,
+                    align: 'center',
+                    fontSize: 13,
+                },
+            ],
+            events: {
+                mousedown: [
+                    function () {
+                        window.open('https://docs.playentry.org/user/block_hardware.html');
+                    },
+                ],
+            },
+        },
+        robot_noti: {
+            skeleton: 'basic_text',
+            color: EntryStatic.colorSet.common.TRANSPARENT,
+            template: '%1',
+            params: [
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.robot_noti_text,
+                    color: EntryStatic.colorSet.common.GRAY,
+                    align: 'center',
+                },
+            ],
+            def: {
+                type: 'robot_noti',
+            },
+            class: 'arduino_default_noti',
+            isNotFor: ['arduinoDisconnected'],
+            events: {},
         },
         robot_reconnect: {
             skeleton: 'basic_button',
@@ -493,11 +701,65 @@ function getBlocks() {
             ],
             events: {
                 mousedown: [
-                    function() {
+                    function () {
                         Entry.hw.retryConnect();
                     },
                 ],
             },
+        },
+        hardware_connect_helper: {
+            skeleton: 'clickable_text',
+            skeletonOptions: {
+                box: {
+                    offsetY: -10,
+                },
+            },
+            template: '%1%2',
+            isNotFor: ['arduinoDisconnected'],
+            color: EntryStatic.colorSet.common.TRANSPARENT,
+            class: 'arduino_guide',
+            params: [
+                {
+                    type: 'Indicator',
+                    img: 'question_in_round.svg',
+                    size: 9,
+                    position: {
+                        x: -55,
+                        y: 0,
+                    },
+                },
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.hardware_connect_helper,
+                    color: EntryStatic.colorSet.common.BUTTON,
+                    align: 'center',
+                    fontSize: 13,
+                },
+            ],
+            events: {
+                mousedown: [
+                    function () {
+                        window.open('https://docs.playentry.org/user/block_hardware.html');
+                    },
+                ],
+            },
+        },
+        hardware_noti_installed: {
+            skeleton: 'basic_text',
+            color: EntryStatic.colorSet.common.TRANSPARENT,
+            template: '%1',
+            params: [
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.hardware_noti_installed,
+                    color: EntryStatic.colorSet.common.TEXT,
+                    align: 'center',
+                    fontSize: 14,
+                },
+            ],
+            class: 'arduino_default_installed',
+            isNotFor: ['arduinoDisconnected'],
+            events: {},
         },
         arduino_open: {
             skeleton: 'basic_button',
@@ -512,14 +774,53 @@ function getBlocks() {
                     align: 'center',
                 },
             ],
-            class: 'arduino_default',
+            class: 'arduino_default_installed',
             events: {
                 mousedown: [
-                    function() {
+                    function () {
                         Entry.hw.openHardwareProgram();
                     },
                 ],
             },
+        },
+        hardware_program_download: {
+            skeleton: 'basic_button',
+            color: EntryStatic.colorSet.common.BUTTON_BACKGROUND,
+            isNotFor: ['arduinoDisconnected'],
+            template: '%1',
+            params: [
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.hardware_program_download,
+                    color: EntryStatic.colorSet.common.BUTTON,
+                    align: 'center',
+                },
+            ],
+            class: 'arduino_default_installed',
+            events: {
+                mousedown: [
+                    function () {
+                        Entry.hw.downloadConnector();
+                    },
+                ],
+            },
+        },
+        hardware_noti_not_installed: {
+            skeleton: 'basic_text',
+            color: EntryStatic.colorSet.common.TRANSPARENT,
+            template: '%1',
+            params: [
+                {
+                    type: 'Text',
+                    text: Lang.Blocks.hardware_noti_not_installed,
+                    color: EntryStatic.colorSet.common.TEXT,
+                    align: 'center',
+                    fontSize: 14,
+                },
+            ],
+            class: 'arduino_default_not_installed',
+            isNotFor: ['arduinoDisconnected'],
+            events: {},
         },
         arduino_cloud_pc_open: {
             skeleton: 'basic_button',
@@ -537,7 +838,7 @@ function getBlocks() {
             class: 'arduino_default',
             events: {
                 mousedown: [
-                    function() {
+                    function () {
                         Entry.hw.openHardwareProgram();
                     },
                 ],
@@ -721,6 +1022,83 @@ function getBlocks() {
                             {
                                 type: 'Angle',
                                 converter: Entry.block.converters.returnRawNumberValueByKey,
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+        color: {
+            color: EntryStatic.colorSet.block.default.BRUSH,
+            outerLine: EntryStatic.colorSet.block.darken.BRUSH,
+            skeleton: 'basic_string_field',
+            statements: [],
+            params: [
+                {
+                    type: 'Color',
+                },
+            ],
+            events: {},
+            def: {
+                params: [null],
+                type: 'color',
+            },
+            paramsKeyMap: {
+                VALUE: 0,
+            },
+            func(sprite, script) {
+                return script.getField('VALUE');
+            },
+            syntax: {
+                js: [],
+                py: [
+                    {
+                        syntax: '%1',
+                        keyOption: 'color',
+                        textParams: [
+                            {
+                                type: 'Color',
+                                converter: Entry.block.converters.returnStringValueUpperCase,
+                                codeMap: 'Entry.CodeMap.Entry.set_color[0]',
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+        text_color: {
+            template: Lang.template.color,
+            color: EntryStatic.colorSet.block.default.TEXT,
+            outerLine: EntryStatic.colorSet.block.darken.TEXT,
+            skeleton: 'basic_string_field',
+            statements: [],
+            params: [
+                {
+                    type: 'Color',
+                },
+            ],
+            events: {},
+            def: {
+                params: [null],
+                type: 'text_color',
+            },
+            paramsKeyMap: {
+                VALUE: 0,
+            },
+            func(sprite, script) {
+                return script.getField('VALUE');
+            },
+            syntax: {
+                js: [],
+                py: [
+                    {
+                        syntax: '%1',
+                        keyOption: 'text_color',
+                        textParams: [
+                            {
+                                type: 'Color',
+                                converter: Entry.block.converters.returnStringValueUpperCase,
+                                codeMap: 'Entry.CodeMap.Entry.set_text_color[0]',
                             },
                         ],
                     },
@@ -1083,14 +1461,14 @@ function getBlocks() {
             ],
             events: {
                 viewAdd: [
-                    function() {
+                    function () {
                         if (Entry.engine) {
                             Entry.engine.showProjectTimer();
                         }
                     },
                 ],
                 viewDestroy: [
-                    function(block, notIncludeSelf) {
+                    function (block, notIncludeSelf) {
                         if (Entry.engine) {
                             Entry.engine.hideProjectTimer(block, notIncludeSelf);
                         }
@@ -1142,14 +1520,14 @@ function getBlocks() {
             ],
             events: {
                 viewAdd: [
-                    function() {
+                    function () {
                         if (Entry.engine) {
                             Entry.engine.showProjectTimer();
                         }
                     },
                 ],
                 viewDestroy: [
-                    function(block, notIncludeSelf) {
+                    function (block, notIncludeSelf) {
                         if (Entry.engine) {
                             Entry.engine.hideProjectTimer(block, notIncludeSelf);
                         }
@@ -1256,241 +1634,6 @@ function getBlocks() {
             },
             func(sprite, script) {
                 return Entry.engine.toggleStop();
-            },
-            syntax: { js: [], py: [''] },
-        },
-        function_field_label: {
-            skeleton: 'basic_param',
-            isNotFor: ['functionEdit'],
-            color: '#f9c535',
-            params: [
-                {
-                    type: 'TextInput',
-                    value: Lang.Blocks.FUNCTION_explanation_1,
-                },
-                {
-                    type: 'Output',
-                    accept: 'param',
-                },
-            ],
-            paramsKeyMap: {
-                NAME: 0,
-                NEXT: 1,
-            },
-            def: {
-                params: [Lang.Blocks.FUNCTION_explanation_1],
-                type: 'function_field_label',
-            },
-            //"syntax": {"js": [], "py": ["%1function_field_label#"]}
-            syntax: { js: [], py: ['name'] },
-        },
-        function_field_string: {
-            skeleton: 'basic_param',
-            isNotFor: ['functionEdit'],
-            color: EntryStatic.colorSet.block.lighten.CALC,
-            params: [
-                {
-                    type: 'Block',
-                    accept: 'string',
-                    restore: true,
-                },
-                {
-                    type: 'Output',
-                    accept: 'param',
-                },
-            ],
-            paramsKeyMap: {
-                PARAM: 0,
-                NEXT: 1,
-            },
-            def: {
-                params: [
-                    {
-                        type: 'text',
-                        params: [Lang.template.function_param_string],
-                    },
-                ],
-                type: 'function_field_string',
-            },
-            syntax: { js: [], py: ['value'] },
-        },
-        function_field_boolean: {
-            skeleton: 'basic_param',
-            isNotFor: ['functionEdit'],
-            color: EntryStatic.colorSet.block.default.JUDGE,
-            params: [
-                {
-                    type: 'Block',
-                    accept: 'boolean',
-                    restore: true,
-                },
-                {
-                    type: 'Output',
-                    accept: 'param',
-                },
-            ],
-            paramsKeyMap: {
-                PARAM: 0,
-                NEXT: 1,
-            },
-            def: {
-                params: [
-                    {
-                        type: 'True',
-                        params: [Lang.template.function_param_boolean],
-                    },
-                ],
-                type: 'function_field_boolean',
-            },
-            syntax: { js: [], py: ['boolean'] },
-        },
-        function_param_string: {
-            skeleton: 'basic_string_field',
-            color: EntryStatic.colorSet.block.lighten.CALC,
-            fontColor: '#000',
-            template: '%1 %2',
-            events: {
-                viewAdd: [
-                    function() {
-                        if (Entry.Func.isEdit) {
-                            Entry.Func.refreshMenuCode();
-                        }
-                    },
-                ],
-            },
-            func() {
-                return this.executor.register.params[
-                    this.executor.register.paramMap[this.block.type]
-                ];
-            },
-            syntax: { js: [], py: [''] },
-        },
-        function_param_boolean: {
-            skeleton: 'basic_boolean_field',
-            color: EntryStatic.colorSet.block.default.JUDGE,
-            template: '%1 %2',
-            events: {
-                viewAdd: [
-                    function() {
-                        if (Entry.Func.isEdit) {
-                            Entry.Func.refreshMenuCode();
-                        }
-                    },
-                ],
-            },
-            func() {
-                return this.executor.register.params[
-                    this.executor.register.paramMap[this.block.type]
-                ];
-            },
-            syntax: { js: [], py: [''] },
-        },
-        function_create: {
-            skeleton: 'basic_create',
-            color: EntryStatic.colorSet.block.default.FUNC,
-            outerLine: EntryStatic.colorSet.block.darken.FUNC,
-            event: 'funcDef',
-            params: [
-                {
-                    type: 'Block',
-                    accept: 'param',
-                    value: {
-                        type: 'function_field_label',
-                        params: [Lang.Blocks.FUNC],
-                        copyable: false,
-                    },
-                },
-                {
-                    type: 'Indicator',
-                    img: 'block_icon/func_icon.svg',
-                    size: 11,
-                },
-            ],
-            paramsKeyMap: {
-                FIELD: 0,
-            },
-            func() {},
-            syntax: {
-                js: [],
-                py: [
-                    {
-                        syntax: '%1',
-                        keyOption: 'function_create',
-                    },
-                ],
-            },
-        },
-        function_general: {
-            skeleton: 'basic',
-            color: EntryStatic.colorSet.block.default.FUNC,
-            outerLine: EntryStatic.colorSet.block.darken.FUNC,
-            params: [
-                {
-                    type: 'Indicator',
-                    img: 'block_icon/func_icon.svg',
-                    size: 11,
-                },
-            ],
-            events: {
-                dataAdd: [
-                    function(block) {
-                        const vc = Entry.variableContainer;
-                        if (vc) {
-                            vc.addRef('_functionRefs', block);
-                        }
-                    },
-                ],
-                dataDestroy: [
-                    function(block) {
-                        const vc = Entry.variableContainer;
-                        if (vc) {
-                            vc.removeRef('_functionRefs', block);
-                        }
-                    },
-                ],
-                dblclick: [
-                    function(blockView) {
-                        const mode = blockView.getBoard().workspace.getMode();
-                        if (mode !== Entry.Workspace.MODE_BOARD) {
-                            return;
-                        }
-                        if (Entry.type !== 'workspace') {
-                            return;
-                        }
-                        const block = blockView.block;
-                        const id = block.getFuncId();
-                        Entry.do('funcEditStart', id);
-                    },
-                ],
-            },
-            func(entity) {
-                if (!this.initiated) {
-                    this.initiated = true;
-                    Entry.callStackLength++;
-
-                    if (Entry.callStackLength > Entry.Executor.MAXIMUM_CALLSTACK) {
-                        Entry.toast.alert(
-                            Lang.Workspace.RecursiveCallWarningTitle,
-                            Lang.Workspace.RecursiveCallWarningContent
-                        );
-                        throw new Error();
-                    }
-
-                    const func = Entry.variableContainer.getFunction(this.block.getFuncId());
-                    this.funcCode = func.content;
-                    this.funcExecutor = this.funcCode.raiseEvent('funcDef', entity)[0];
-                    this.funcExecutor.register.params = this.getParams();
-                    this.funcExecutor.register.paramMap = func.paramMap;
-                    this.funcExecutor.parentExecutor = this.executor;
-                    this.funcExecutor.isFuncExecutor = true;
-                }
-                this.funcExecutor.execute();
-                if (!this.funcExecutor.isEnd()) {
-                    this.funcCode.removeExecutor(this.funcExecutor);
-                    return Entry.STATIC.BREAK;
-                }
-
-                Entry.callStackLength--;
             },
             syntax: { js: [], py: [''] },
         },
@@ -1860,7 +2003,6 @@ function getBlocks() {
                     },
                 },
             ],
-            isPrimitive: true,
             events: {},
             def: {
                 params: [null],
@@ -1887,6 +2029,97 @@ function getBlocks() {
                                 converter: Entry.block.converters.returnStringKey,
                             },
                         ],
+                    },
+                ],
+            },
+        },
+
+        get_korea_area_code: {
+            color: EntryStatic.colorSet.block.default.EXPANSION,
+            outerLine: EntryStatic.colorSet.block.darken.EXPANSION,
+            template: '%1 %2 ',
+            skeleton: 'basic_string_field',
+            statements: [],
+            params: [
+                {
+                    type: 'Dropdown',
+                    options: getStateOptions(),
+                    value: 'Seoul',
+                    fontSize: 11,
+                    bgColor: EntryStatic.colorSet.block.darken.EXPANSION,
+                    arrowColor: EntryStatic.colorSet.common.WHITE,
+                    dropdownSync: 'weather',
+                },
+                {
+                    type: 'DropdownDynamic',
+                    value: null,
+                    menuName() {
+                        const value = this.getTargetValue('weather');
+                        if (!value) {
+                            return [[Lang.Blocks.no_target, 'null']];
+                        }
+                        return getCityOptions(value);
+                    },
+                    needDeepCopy: true,
+                    fontSize: 11,
+                    bgColor: EntryStatic.colorSet.block.darken.EXPANSION,
+                    arrowColor: EntryStatic.colorSet.common.WHITE,
+                    defaultValue: (value, options) => {
+                        if (options.length) {
+                            return options[0][1];
+                        }
+                        return null;
+                    },
+                },
+            ],
+            events: {},
+            def: {
+                params: [null],
+            },
+            paramsKeyMap: {
+                STATE: 0,
+                SUB_LOC: 1,
+            },
+            func(sprite, script) {
+                return Entry.EXPANSION_BLOCK.weather.getCityCode({
+                    parent: script.getField('STATE'),
+                    sub: script.getField('SUB_LOC'),
+                });
+            },
+            syntax: {
+                js: [],
+                py: [
+                    {
+                        type: 'Dropdown',
+                        options: getStateOptions(),
+                        value: 'Seoul',
+                        fontSize: 11,
+                        bgColor: EntryStatic.colorSet.block.darken.EXPANSION,
+                        arrowColor: EntryStatic.colorSet.common.WHITE,
+                        dropdownSync: 'weather',
+                        converter: Entry.block.converters.returnStringValue,
+                    },
+                    {
+                        type: 'DropdownDynamic',
+                        value: null,
+                        menuName() {
+                            const value = this.getTargetValue('weather');
+                            if (!value) {
+                                return [[Lang.Blocks.no_target, 'null']];
+                            }
+                            return getCityOptions(value);
+                        },
+                        needDeepCopy: true,
+                        fontSize: 11,
+                        bgColor: EntryStatic.colorSet.block.darken.EXPANSION,
+                        arrowColor: EntryStatic.colorSet.common.WHITE,
+                        defaultValue: (value, options) => {
+                            if (options.length) {
+                                return options[0][1];
+                            }
+                            return null;
+                        },
+                        converter: Entry.block.converters.returnStringValue,
                     },
                 ],
             },
@@ -2476,11 +2709,14 @@ function getBlocks() {
                     const sounds = sprite.parent.sounds;
                     const isExist = Entry.isExist(soundId, 'id', sounds);
                     if (isExist) {
+                        const duration = Math.floor(
+                            (sound.duration * 1000) / Entry.playbackRateValue
+                        );
                         const instance = Entry.Utils.playSound(soundId);
                         Entry.Utils.addSoundInstances(instance);
                         setTimeout(() => {
                             script.playState = 0;
-                        }, sound.duration * 1000);
+                        }, duration);
                     }
                     return script;
                 } else if (script.playState === 1) {
@@ -3049,31 +3285,6 @@ function getBlocks() {
             },
             syntax: { js: [], py: [''] },
         },
-        when_some_key_click: {
-            color: EntryStatic.colorSet.block.default.START,
-            skeleton: 'basic_event',
-            statements: [],
-            params: [
-                {
-                    type: 'Indicator',
-                    img: 'block_icon/start_icon_keyboard.png',
-                    size: 17,
-                    position: {
-                        x: 0,
-                        y: -2,
-                    },
-                },
-            ],
-            events: {},
-            def: {
-                params: [null],
-            },
-            func(sprite, script) {
-                return script.callReturn();
-            },
-            event: 'keyPress',
-            syntax: { js: [], py: ['Entry.on_key_press_down(%1)'] },
-        },
         text: {
             color: EntryStatic.colorSet.block.lighten.CALC,
             skeleton: 'basic_string_field',
@@ -3247,7 +3458,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         Ntry.dispatchEvent('getItem');
                         self.isAction = false;
                     };
@@ -3281,7 +3492,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         Ntry.dispatchEvent('getItem');
                         self.isAction = false;
                     };
@@ -3315,7 +3526,7 @@ function getBlocks() {
                     this.isAction = true;
                     const STATIC = Ntry.STATIC;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         window.setTimeout(() => {
                             Ntry.dispatchEvent('unitAction', Ntry.STATIC.WALK, () => {
                                 self.isAction = false;
@@ -3370,7 +3581,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         window.setTimeout(() => {
                             Ntry.dispatchEvent('unitAction', STATIC.WALK, () => {
                                 self.isAction = false;
@@ -3426,7 +3637,7 @@ function getBlocks() {
                     this.isAction = true;
                     const STATIC = Ntry.STATIC;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         window.setTimeout(() => {
                             Ntry.dispatchEvent('unitAction', Ntry.STATIC.WALK, () => {
                                 self.isAction = false;
@@ -3482,7 +3693,7 @@ function getBlocks() {
                     this.isAction = true;
                     const STATIC = Ntry.STATIC;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         window.setTimeout(() => {
                             Ntry.dispatchEvent('unitAction', STATIC.WALK, () => {
                                 self.isAction = false;
@@ -3564,7 +3775,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         self.isAction = false;
                     };
                     // turn direction
@@ -3595,7 +3806,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         self.isAction = false;
                     };
 
@@ -3627,7 +3838,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         self.isAction = false;
                     };
 
@@ -3659,7 +3870,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         self.isAction = false;
                     };
 
@@ -3880,7 +4091,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         self.isAction = false;
                     };
 
@@ -3902,7 +4113,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         self.isAction = false;
                     };
 
@@ -3949,7 +4160,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         self.isAction = false;
                     };
                     const unit = Ntry.getUnit();
@@ -4473,7 +4684,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         self.isAction = false;
                     };
                     // turn direction
@@ -4505,7 +4716,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         self.isAction = false;
                     };
 
@@ -4538,7 +4749,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         self.isAction = false;
                     };
 
@@ -4571,7 +4782,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         self.isAction = false;
                     };
                     // turn direction
@@ -4831,7 +5042,7 @@ function getBlocks() {
                         Ntry.entityManager.getComponent(unitId, Ntry.STATIC.GRID)
                     );
                     script.direction = unitComp.direction;
-                    const callBack = function() {
+                    const callBack = function () {
                         unitComp.direction = script.direction;
                         script.isAction = false;
                     };
@@ -4941,7 +5152,7 @@ function getBlocks() {
                         );
                         return Entry.STATIC.BREAK;
                     }
-                    const callBack = function() {
+                    const callBack = function () {
                         Ntry.dispatchEvent('playSound', 'dieLupin');
                         Ntry.dispatchEvent('destroyObstacle', 2, (state) => {
                             script.isAction = false;
@@ -5000,7 +5211,7 @@ function getBlocks() {
                     }
                     Ntry.dispatchEvent('destroyObstacle', 1, (state) => {});
                     Ntry.dispatchEvent('destroyObstacle', -1, (state) => {});
-                    const callBack = function() {
+                    const callBack = function () {
                         Ntry.dispatchEvent('startEnemyWalk', true, () => {
                             script.isAction = false;
                         });
@@ -5062,7 +5273,7 @@ function getBlocks() {
                     const backEnemyExist = !!findBackTile.length;
                     if (frontEnemyValid && !backEnemyExist) {
                         // success
-                        var callBack = function() {
+                        var callBack = function () {
                             Ntry.dispatchEvent('destroyObstacle', 1, (state) => {});
                             Ntry.dispatchEvent('startEnemyWalk', true, () => {
                                 script.isAction = false;
@@ -5071,7 +5282,7 @@ function getBlocks() {
                         Ntry.dispatchEvent('unitAction', Ntry.STATIC.PEPE, callBack);
                     } else if (frontEnemyValid && backEnemyExist) {
                         // attack and dead
-                        var callBack = function() {
+                        var callBack = function () {
                             Ntry.dispatchEvent('destroyObstacle', 1, (state) => {});
                             Ntry.dispatchEvent('startEnemyWalk', false, () => {});
                         };
@@ -5147,7 +5358,7 @@ function getBlocks() {
                     const backEnemyExist = !!findBackTile.length;
                     if (frontEnemyValid && !backEnemyExist) {
                         // success
-                        var callBack = function() {
+                        var callBack = function () {
                             Ntry.dispatchEvent('destroyObstacle', 1, (state) => {});
                             Ntry.dispatchEvent('startEnemyWalk', true, () => {
                                 script.isAction = false;
@@ -5156,7 +5367,7 @@ function getBlocks() {
                         Ntry.dispatchEvent('unitAction', Ntry.STATIC.PEPE, callBack);
                     } else if (frontEnemyValid && backEnemyExist) {
                         // attack and dead
-                        var callBack = function() {
+                        var callBack = function () {
                             Ntry.dispatchEvent('destroyObstacle', 1, (state) => {});
                             Ntry.dispatchEvent('startEnemyWalk', false, () => {});
                         };
@@ -5233,7 +5444,7 @@ function getBlocks() {
                         );
                         return Entry.STATIC.BREAK;
                     }
-                    const callBack = function() {
+                    const callBack = function () {
                         Ntry.dispatchEvent('destroyObstacle', 1, (state) => {
                             script.isAction = false;
                         });
@@ -5297,7 +5508,7 @@ function getBlocks() {
                     if (frontEnemyValid && !backEnemyExist) {
                         // success
                         Ntry.dispatchEvent('destroyObstacle', 1, (state) => {});
-                        var callBack = function() {
+                        var callBack = function () {
                             Ntry.dispatchEvent('startEnemyWalk', true, () => {
                                 script.isAction = false;
                             });
@@ -5306,7 +5517,7 @@ function getBlocks() {
                     } else if (frontEnemyValid && backEnemyExist) {
                         // attack and dead
                         Ntry.dispatchEvent('destroyObstacle', 1, (state) => {});
-                        var callBack = function() {
+                        var callBack = function () {
                             Ntry.dispatchEvent('startEnemyWalk', false, () => {});
                         };
                         Ntry.dispatchEvent('unitAction', Ntry.STATIC.PETI, callBack);
@@ -5356,7 +5567,7 @@ function getBlocks() {
                     $.each(entities, (id, entity) => {
                         unitId = id;
                     });
-                    const callBack = function() {
+                    const callBack = function () {
                         script.isAction = false;
                     };
                     const unitComp = Ntry.entityManager.getComponent(unitId, Ntry.STATIC.UNIT);
@@ -5397,7 +5608,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         self.isAction = false;
                     };
 
@@ -5430,7 +5641,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callBack = function() {
+                    const callBack = function () {
                         self.isAction = false;
                     };
 
@@ -5485,7 +5696,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
                     const self = this;
-                    const callback = function() {
+                    const callback = function () {
                         Ntry.dispatchEvent('destroyObstacle', 1, (state) => {
                             switch (state) {
                                 case Ntry.STATIC.OBSTACLE_DESTROY_SUCCESS:
@@ -5931,7 +6142,7 @@ function getBlocks() {
                                 targetPos.minY = obstacleGrid.y * tileSize + tileSize / 2;
                             }
 
-                            (function(_id, _deltaPos, _deltaPos2, _targetPos, obstacleGrid) {
+                            (function (_id, _deltaPos, _deltaPos2, _targetPos, obstacleGrid) {
                                 const comp = Ntry.entityManager.getComponent(
                                     _id,
                                     Ntry.STATIC.ANIMATE
@@ -6051,7 +6262,7 @@ function getBlocks() {
                     this.isContinue = true;
                     this.isAction = true;
 
-                    const callback = function() {
+                    const callback = function () {
                         Ntry.dispatchEvent('destroyObstacle', 1, (state) => {
                             switch (state) {
                                 case Ntry.STATIC.OBSTACLE_DESTROY_SUCCESS:
@@ -7843,7 +8054,7 @@ function inheritBlockSchema() {
             block.isNotFor = [];
         }
         if (block.parent) {
-            const F = function() {};
+            const F = function () {};
             F.prototype = Entry.block[block.parent];
             const schema = new F();
             schema.syntax = undefined;
@@ -7857,12 +8068,19 @@ function inheritBlockSchema() {
 
 function assignBlocks() {
     Entry.block.converters = getConverters();
+    Entry.block.changeBlockText = function (key, text) {
+        const block = this[key];
+        if (block) {
+            block.params[0].text = text;
+        }
+    };
+    Entry.block.changeBlockEvent = function (key, event, callback) {
+        const block = this[key];
+        if (block) {
+            block.events[event] = [callback];
+        }
+    };
     Entry.block = Object.assign(Entry.block, getBlocks(), blocks.getBlocks());
-    if (EntryStatic.isPracticalCourse) {
-        const practicalCourseBlockModule = require('../playground/block_entry_mini');
-        Object.assign(Entry.block, practicalCourseBlockModule.practicalCourseBlock);
-        applySetLanguage(practicalCourseBlockModule);
-    }
 }
 
 function applySetLanguage(hasSetLanguageObj) {
@@ -7875,12 +8093,20 @@ function applySetLanguage(hasSetLanguageObj) {
     }
 }
 
-Entry.reloadBlock = function() {
+Entry.reloadBlock = function () {
     Object.values(Entry.HARDWARE_LIST).forEach(applySetLanguage);
+    Object.values(Entry.HARDWARE_LITE_LIST).forEach(applySetLanguage);
     assignBlocks();
     inheritBlockSchema();
 };
+
 Entry.reloadBlock();
+
+Entry.destroyBlock = function () {
+    blocks.destroyBlockList.forEach((fn) => {
+        fn();
+    });
+};
 
 if (typeof exports === 'object') {
     exports.block = Entry.block;

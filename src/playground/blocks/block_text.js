@@ -37,7 +37,6 @@ module.exports = {
                     const targetId = script.getField('VALUE', script);
                     let targetEntity;
                     if (targetId === 'self') {
-                        console.log(sprite);
                         if (sprite.type !== 'textBox') {
                             throw new Error('textBox가 아닙니다.');
                         }
@@ -234,7 +233,7 @@ module.exports = {
                         value: 'strike',
                         fontSize: 10,
                         textColor: '#fff',
-                        bgColor: EntryStatic.colorSet.block.darken.LOOKS,
+                        bgColor: EntryStatic.colorSet.block.darken.TEXT,
                         arrowColor: EntryStatic.colorSet.arrow.default.DEFAULT,
                     },
                     {
@@ -246,7 +245,7 @@ module.exports = {
                         value: 'on',
                         fontSize: 10,
                         textColor: '#fff',
-                        bgColor: EntryStatic.colorSet.block.darken.LOOKS,
+                        bgColor: EntryStatic.colorSet.block.darken.TEXT,
                         arrowColor: EntryStatic.colorSet.arrow.default.DEFAULT,
                     },
                     {
@@ -272,7 +271,7 @@ module.exports = {
                     sprite.setTextEffect(effect, mode);
                     return script.callReturn();
                 },
-                syntax: { js: [], py: ['Entry.changeTextEffect(%1, %2)'] },
+                syntax: { js: [], py: ['Entry.changeTextEffect("%1", "%2")'] },
             },
             text_change_font: {
                 color: EntryStatic.colorSet.block.default.TEXT,
@@ -285,6 +284,8 @@ module.exports = {
                         value: null,
                         menuName: 'fonts',
                         fontSize: 11,
+                        bgColor: EntryStatic.colorSet.block.darken.TEXT,
+                        arrowColor: EntryStatic.colorSet.arrow.default.DEFAULT,
                     },
                     {
                         type: 'Indicator',
@@ -307,7 +308,7 @@ module.exports = {
                     sprite.setFontWithLog(`${sprite.getFontSize()} ${font}`, false);
                     return script.callReturn();
                 },
-                syntax: { js: [], py: ['Entry.text_change_font(%1)'] },
+                syntax: { js: [], py: ['Entry.text_change_font("%1")'] },
             },
             text_change_font_color: {
                 color: EntryStatic.colorSet.block.default.TEXT,
@@ -316,7 +317,8 @@ module.exports = {
                 statements: [],
                 params: [
                     {
-                        type: 'Color',
+                        type: 'Block',
+                        accept: 'string',
                     },
                     {
                         type: 'Indicator',
@@ -326,7 +328,12 @@ module.exports = {
                 ],
                 events: {},
                 def: {
-                    params: [null],
+                    params: [
+                        {
+                            type: 'text_color',
+                        },
+                        null,
+                    ],
                     type: 'text_change_font_color',
                 },
                 paramsKeyMap: {
@@ -335,11 +342,15 @@ module.exports = {
                 class: 'text',
                 isNotFor: ['sprite'],
                 func(sprite, script) {
-                    const color = script.getField('VALUE', script);
+                    let color = script.getStringValue('VALUE', script);
+
+                    if (color.indexOf('#') !== 0) {
+                        color = `#${color}`;
+                    }
                     sprite.setColorWithLog(color);
                     return script.callReturn();
                 },
-                syntax: { js: [], py: ['Entry.text_change_font_color(%1)'] },
+                syntax: { js: [], py: ['Entry.text_change_font_color("%1")'] },
             },
             text_change_bg_color: {
                 color: EntryStatic.colorSet.block.default.TEXT,
@@ -348,7 +359,8 @@ module.exports = {
                 statements: [],
                 params: [
                     {
-                        type: 'Color',
+                        type: 'Block',
+                        accept: 'string',
                     },
                     {
                         type: 'Indicator',
@@ -358,7 +370,12 @@ module.exports = {
                 ],
                 events: {},
                 def: {
-                    params: [null],
+                    params: [
+                        {
+                            type: 'text_color',
+                        },
+                        null,
+                    ],
                     type: 'text_change_bg_color',
                 },
                 paramsKeyMap: {
@@ -367,11 +384,14 @@ module.exports = {
                 class: 'text',
                 isNotFor: ['sprite'],
                 func(sprite, script) {
-                    const color = script.getField('VALUE', script);
+                    let color = script.getStringValue('VALUE', script);
+                    if (color.indexOf('#') !== 0) {
+                        color = `#${color}`;
+                    }
                     sprite.setBGColourWithLog(color);
                     return script.callReturn();
                 },
-                syntax: { js: [], py: ['Entry.text_change_bg_color(%1)'] },
+                syntax: { js: [], py: ['Entry.text_change_bg_color("%1")'] },
             },
             text_flush: {
                 color: EntryStatic.colorSet.block.default.TEXT,
